@@ -8,6 +8,6 @@ package mycompany.sistemkasir;
  *
  * @author Fajri Ramadhan
  */
-public interface Kedaluwarsa {
+public interface Kedaluwarsa { //interface
     void cekKedaluwarsa();
 }
