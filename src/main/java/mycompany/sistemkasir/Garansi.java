@@ -8,6 +8,6 @@ package mycompany.sistemkasir;
  *
  * @author Fajri Ramadhan
  */
-public interface Garansi {
+public interface Garansi { //interface
     void klaimGaransi();
 }
