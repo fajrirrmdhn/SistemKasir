@@ -8,7 +8,7 @@ package mycompany.sistemkasir;
  *
  * @author Fajri Ramadhan
  */
-public class Produk {
+public abstract class Produk {
     //encapsulation
     private String namaProduk;
     private int hargaProduk;
@@ -49,4 +49,6 @@ public class Produk {
         System.out.println("Harga Barang: " + this.hargaProduk);
         System.out.println("Stok Barang: " + this.stok);
     }
+    
+    public abstract void prosesRetur();
 }
