@@ -3,12 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package mycompany.sistemkasir;
-
 /**
  *
  * @author Fajri Ramadhan
  */
-public class ProdukMakanan extends Produk { //inheritance
+public class ProdukMakanan extends Produk implements Kedaluwarsa{ //inheritance
     private String exp;
     public ProdukMakanan(String namaProduk, int hargaProduk, int stok, String exp){
         super(namaProduk, hargaProduk, stok);
@@ -23,5 +22,13 @@ public class ProdukMakanan extends Produk { //inheritance
         System.out.println("Tanggal Expired: " + this.exp);
     }
     
+    @Override //abstract method
+    public void prosesRetur(){
+        System.out.println("Barang Diretur Karena Sudah Kedaluwarsa");
+    }
     
+    @Override //interface
+    public void cekKedaluwarsa(){
+        System.out.println("Mengecek Kelayakan Makanan");
+    }
 }

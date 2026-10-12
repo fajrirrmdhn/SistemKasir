@@ -8,7 +8,7 @@ package mycompany.sistemkasir;
  *
  * @author Fajri Ramadhan
  */
-public class ProdukElektronik extends Produk { //inheritance
+public class ProdukElektronik extends Produk implements Garansi { //inheritance
     private String garansi;
     public ProdukElektronik(String namaProduk, int hargaProduk, int stok, String garansi){
         super(namaProduk, hargaProduk, stok);
@@ -20,8 +20,16 @@ public class ProdukElektronik extends Produk { //inheritance
         System.out.println("Nama Barang: " + getNama());
         System.out.println("Harga Barang: " + getHarga());
         System.out.println("Stok Barang: " + getStok());
-        System.out.println("Tanggal Expired: " + this.garansi);
+        System.out.println("Garansi: " + this.garansi);
     }
     
+    @Override //abstract method
+    public void prosesRetur(){
+        System.out.println("Barang Diretur Karena Klaim Garansi");
+    }
     
+    @Override //interface
+    public void klaimGaransi(){
+        System.out.println("Klaim Garansi sedang Diproses");
+    }
 }
