@@ -44,6 +44,25 @@ public class SistemKasir{
         }
     }
     
+    public static void prosesReturProduk(String namaProdukDicari) {
+    boolean ditemukan = false;
+    for (int i = 0; i < jumlahProduk; i++) {
+        if (daftarProduk[i].getNama().equalsIgnoreCase(namaProdukDicari)) {
+            System.out.println("Detail Produk");
+            daftarProduk[i].tampilkanInfo();
+            
+            System.out.println("Info Retur Produk");
+            daftarProduk[i].prosesRetur(); 
+            
+            ditemukan = true;
+            break;
+        }
+    }
+    if (!ditemukan) {
+        System.out.println("Produk tidak ditemukan!");
+    }
+}
+    
     public static void main(String[] args){
         boolean isRunning = true;
 
@@ -51,6 +70,7 @@ public class SistemKasir{
             System.out.println("Selamat Datang di Sistem Kasir");
             System.out.println("1. Input Barang");
             System.out.println("2. Pembayaran");
+            System.out.println("3. Retur Barang");
             System.out.print("Pilih Opsi: ");
             int opsi = scanner.nextInt();
             System.out.println();
@@ -125,7 +145,30 @@ public class SistemKasir{
                         }
                     }
                     break;
-                    
+                  
+                case 3:
+                    isRunning = true;
+                    scanner.nextLine(); //membersihkan spasi sebelum input
+                    while (isRunning){
+                        System.out.print("Nama Barang: ");
+                        String barangCari = scanner.nextLine();
+
+                        prosesReturProduk(barangCari);
+                        System.out.println();
+                   
+                        cariProduk(barangCari);
+                        
+                        System.out.println();
+                        System.out.print("Apakah selesai? (y/n): ");
+                        String konfir = scanner.nextLine();
+                        System.out.println();
+                        if (konfir.equalsIgnoreCase("y")){
+                            isRunning = false;
+                        }else{
+                            isRunning = true;
+                        }
+                    }
+                    break;
             }    
         }
     }
