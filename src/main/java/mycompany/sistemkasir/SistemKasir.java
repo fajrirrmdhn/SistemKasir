@@ -73,7 +73,7 @@ public class SistemKasir {
         }
 
         while (isRunning) {
-            System.out.println("       SELAMAT DATANG DI SISTEM KASIR     ");
+            System.out.println("\nSELAMAT DATANG DI SISTEM KASIR");
             System.out.println("1. Input Barang Baru");
             System.out.println("2. Lihat Daftar Barang");
             System.out.println("3. Pembayaran / Beli Produk");
