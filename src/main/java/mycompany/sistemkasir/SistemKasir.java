@@ -1,86 +1,43 @@
 package mycompany.sistemkasir;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class SistemKasir {
-    static Scanner scanner = new Scanner(System.in);
-    
-    static ArrayList<Produk> daftarProduk = new ArrayList<>();
-    static HashMap<String, String> dataPelanggan = new HashMap<>();
-
-    public static Produk cariProduk(String namaProdukDicari) throws ProdukTidakDitemukanException {
-        for (Produk p : daftarProduk) {
-            if (p.getNama().equalsIgnoreCase(namaProdukDicari)) {
-                return p;
-            }
-        }
-
-        throw new ProdukTidakDitemukanException("Gagal: Produk '" + namaProdukDicari + "' tidak ditemukan dalam katalog!");
-    }
-
-    public static void beliProduk(String namaProdukDibeli) throws ProdukTidakDitemukanException, Exception {
-        Produk produk = cariProduk(namaProdukDibeli);
-        produk.tampilkanInfo();
-
-        System.out.print("Jumlah Barang yang Dibeli: ");
-        int stokDibeli = scanner.nextInt();
-        scanner.nextLine();
-
-        if (stokDibeli <= 0) {
-            throw new Exception("Jumlah pembelian harus lebih dari 0!");
-        }
-
-        if (stokDibeli > produk.getStok()) {
-            throw new Exception("Stok tidak mencukupi! Stok tersedia saat ini: " + produk.getStok());
-        }
-
-        Transaksi hitung = new Transaksi();
-        if (stokDibeli == 1) {
-            hitung.hitungTotalPembayaran(produk.getHarga());
-        } else {
-            hitung.hitungTotalPembayaran(produk.getHarga(), stokDibeli);
-        }
-
-        produk.setStok(produk.getStok() - stokDibeli);
-        System.out.println("Pembayaran Berhasil! Sisa stok " + produk.getNama() + ": " + produk.getStok());
-    }
-
-    public static void prosesReturProduk(String namaProdukDicari) throws ProdukTidakDitemukanException {
-        Produk produk = cariProduk(namaProdukDicari);
-        System.out.println("Detail Produk Retur");
-        produk.tampilkanInfo();
-        System.out.println("Info Retur Produk:");
-        produk.prosesRetur();
-    }
-
     public static void main(String[] args) {
-        boolean isRunning = true;
+        Scanner scanner = new Scanner(System.in);
 
+        // Delegasi Pengelolaan Data ke Class Toko
+        Toko tokoSaya = new Toko("Toko Wak Rusdi");
+        tokoSaya.bukaToko();
+
+        // Initial Dummy Data (3-5 Produk, 2-3 Pelanggan)
         try {
-            daftarProduk.add(new ProdukMakanan("Indomie", 3000, 50, "2026-12-31"));
-            daftarProduk.add(new ProdukMakanan("Susu UHT", 7000, 20, "2026-08-15"));
-            daftarProduk.add(new ProdukElektronik("Mouse Wireless", 150000, 10, "1 Tahun"));
-            daftarProduk.add(new ProdukElektronik("Keyboard", 450000, 5, "2 Tahun"));
+            tokoSaya.tambahProduk(new ProdukMakanan("Indomie", 3000, 50, "2026-12-31"));
+            tokoSaya.tambahProduk(new ProdukMakanan("Susu UHT", 7000, 20, "2026-08-15"));
+            tokoSaya.tambahProduk(new ProdukElektronik("Mouse Wireless", 150000, 10, "1 Tahun"));
+            tokoSaya.tambahProduk(new ProdukElektronik("Keyboard Mechanical", 450000, 5, "2 Tahun"));
 
-            dataPelanggan.put("CUST001", "Perrel L Brown");
-            dataPelanggan.put("CUST002", "Brandon Currington");
-            dataPelanggan.put("CUST003", "Michael Willis Heard");
+            tokoSaya.tambahPelanggan(new Pelanggan("CUST001", "Perrel L Brown"));
+            tokoSaya.tambahPelanggan(new Pelanggan("CUST002", "Brandon Currington"));
+            tokoSaya.tambahPelanggan(new Pelanggan("CUST003", "Michael Willis Heard"));
         } catch (Exception e) {
             System.out.println("Error Inisialisasi Data: " + e.getMessage());
         }
 
+        boolean isRunning = true;
+
         while (isRunning) {
-            System.out.println("\nSELAMAT DATANG DI SISTEM KASIR");
-            System.out.println("1. Input Barang Baru");
-            System.out.println("2. Lihat Daftar Barang");
-            System.out.println("3. Pembayaran / Beli Produk");
-            System.out.println("4. Retur Barang");
-            System.out.println("5. Kelola Member / Pelanggan");
-            System.out.println("6. Keluar");
-            System.out.print("Pilih Opsi (1-6): ");
+            System.out.println("==================================");
+            System.out.println("MENU UTAMA SISTEM KASIR");
+            System.out.println("1. Tambah Produk Baru");
+            System.out.println("2. Lihat Daftar Produk");
+            System.out.println("3. Cari Produk");
+            System.out.println("4. Manajemen Pelanggan");
+            System.out.println("5. Transaksi Pembelian");
+            System.out.println("6. Retur Barang");
+            System.out.println("7. Keluar");
+            System.out.print("Pilih Opsi (1-7): ");
 
             try {
                 int opsi = scanner.nextInt();
@@ -90,10 +47,8 @@ public class SistemKasir {
                     case 1 -> {
                         System.out.print("Masukkan Nama Produk: ");
                         String namaProduk = scanner.nextLine();
-
                         System.out.print("Masukkan Harga Produk: ");
                         int hargaProduk = scanner.nextInt();
-
                         System.out.print("Masukkan Stok Produk: ");
                         int stokProduk = scanner.nextInt();
                         scanner.nextLine();
@@ -108,114 +63,111 @@ public class SistemKasir {
                         if (jenisProduk.equalsIgnoreCase("Makanan")) {
                             System.out.print("Tanggal Expired (YYYY-MM-DD): ");
                             String expired = scanner.nextLine();
-                            daftarProduk.add(new ProdukMakanan(namaProduk, hargaProduk, stokProduk, expired));
-                            System.out.println("Produk Makanan Berhasil Ditambahkan! Total: " + daftarProduk.size());
+                            tokoSaya.tambahProduk(new ProdukMakanan(namaProduk, hargaProduk, stokProduk, expired));
                         } else if (jenisProduk.equalsIgnoreCase("Elektronik")) {
                             System.out.print("Garansi: ");
                             String garansi = scanner.nextLine();
-                            daftarProduk.add(new ProdukElektronik(namaProduk, hargaProduk, stokProduk, garansi));
-                            System.out.println("Produk Elektronik Berhasil Ditambahkan! Total: " + daftarProduk.size());
+                            tokoSaya.tambahProduk(new ProdukElektronik(namaProduk, hargaProduk, stokProduk, garansi));
                         } else {
                             System.out.println("Jenis produk tidak valid!");
                         }
                     }
 
                     case 2 -> {
-                        System.out.println("Daftar Produk (ArrayList)");
-                        if (daftarProduk.isEmpty()) {
-                            System.out.println("Belum ada produk yang tersimpan.");
-                        } else {
-                            for (int i = 0; i < daftarProduk.size(); i++) {
-                                System.out.println("\n[ No. " + (i + 1) + " ]");
-                                daftarProduk.get(i).tampilkanInfo();
-                            }
-                        }
+                        System.out.println("\nDAFTAR PRODUK");
+                        tokoSaya.lihatSemuaProduk();
                     }
 
                     case 3 -> {
-                        System.out.println("Pembayaran / Transaksi");
-                        System.out.print("Masukkan Nama Barang yang Dibeli: ");
-                        String barangCari = scanner.nextLine();
-
+                        System.out.print("Masukkan Nama Produk yang Dicari: ");
+                        String namaCari = scanner.nextLine();
                         try {
-                            beliProduk(barangCari);
+                            Produk p = tokoSaya.cariProduk(namaCari);
+                            System.out.println("\nPRODUK DITEMUKAN");
+                            p.tampilkanInfo();
                         } catch (ProdukTidakDitemukanException e) {
-                            System.out.println("[PERINGATAN CUSTOM EXCEPTION]: " + e.getMessage());
-                        } catch (Exception e) {
-                            System.out.println("[ERROR TRANSAKSI]: " + e.getMessage());
-                        } finally {
-                            System.out.println("[FINALLY] Sesi transaksi produk selesai dieksekusi.");
+                            System.out.println("[PERINGATAN]: " + e.getMessage());
                         }
                     }
 
                     case 4 -> {
-                        System.out.println("Retur Barang");
-                        System.out.print("Masukkan Nama Barang yang Diretur: ");
-                        String barangCari = scanner.nextLine();
-
-                        try {
-                            prosesReturProduk(barangCari);
-                        } catch (ProdukTidakDitemukanException e) {
-                            System.out.println("[PERINGATAN CUSTOM EXCEPTION]: " + e.getMessage());
-                        } finally {
-                            System.out.println("[FINALLY] Sesi retur barang selesai dieksekusi.");
-                        }
-                    }
-
-                    case 5 -> {
-                        System.out.println("Kelola Member / Pelanggan");
-                        System.out.println("1. Tambah Member Baru");
-                        System.out.println("2. Cari Member via ID");
-                        System.out.println("3. Tampilkan Semua Member");
+                        System.out.println("\nKELOLA PELANGGAN");
+                        System.out.println("1. Tambah Pelanggan Baru");
+                        System.out.println("2. Cari Pelanggan via ID");
+                        System.out.println("3. Lihat Semua Pelanggan");
                         System.out.print("Pilih (1-3): ");
                         int menuMember = scanner.nextInt();
                         scanner.nextLine();
 
                         if (menuMember == 1) {
-                            System.out.print("Masukkan ID Pelanggan (Key): ");
+                            System.out.print("Masukkan ID Pelanggan: ");
                             String id = scanner.nextLine();
-                            System.out.print("Masukkan Nama Pelanggan (Value): ");
+                            System.out.print("Masukkan Nama Pelanggan: ");
                             String nama = scanner.nextLine();
-
-                            dataPelanggan.put(id, nama);
-                            System.out.println("Member berhasil ditambahkan ke HashMap!");
+                            tokoSaya.tambahPelanggan(new Pelanggan(id, nama));
                         } else if (menuMember == 2) {
-                            System.out.print("Masukkan ID Pelanggan yang dicari: ");
+                            System.out.print("Masukkan ID Pelanggan: ");
                             String searchId = scanner.nextLine();
-
-                            if (dataPelanggan.containsKey(searchId)) {
-                                System.out.println("Ditemukan! Nama Member: " + dataPelanggan.get(searchId));
-                            } else {
-                                System.out.println("Member dengan ID '" + searchId + "' tidak terdaftar.");
-                            }
+                            tokoSaya.cariPelanggan(searchId);
                         } else if (menuMember == 3) {
-                            System.out.println("Total Member Terdaftar: " + dataPelanggan.size());
-                            for (String keyId : dataPelanggan.keySet()) {
-                                System.out.println("- ID: " + keyId + " | Nama: " + dataPelanggan.get(keyId));
-                            }
+                            tokoSaya.lihatSemuaPelanggan();
+                        }
+                    }
+
+                    case 5 -> {
+                        System.out.println("\nSISTEM TRANSAKSI");
+                        System.out.print("Masukkan ID Pelanggan: ");
+                        String idInput = scanner.nextLine();
+                        Pelanggan pembeli = tokoSaya.getPelanggan(idInput);
+
+                        if (pembeli == null) {
+                            System.out.println("Gagal: Pelanggan belum terdaftar!");
+                        } else if (tokoSaya.getJumlahProduk() == 0) {
+                            System.out.println("Gagal: Belum ada produk di toko.");
                         } else {
-                            System.out.println("Pilihan menu member tidak valid.");
+                            tokoSaya.lihatSemuaProduk();
+                            System.out.print("Pilih Nomor Produk yang ingin dibeli: ");
+                            int noProduk = scanner.nextInt() - 1;
+                            System.out.print("Masukkan Jumlah Beli: ");
+                            int jumlahBeli = scanner.nextInt();
+                            scanner.nextLine();
+
+                            if (noProduk >= 0 && noProduk < tokoSaya.getJumlahProduk()) {
+                                Produk produkDipilih = tokoSaya.getProdukInt(noProduk);
+                                TransaksiPenjualan.prosesTransaksi(pembeli, produkDipilih, jumlahBeli);
+                            } else {
+                                System.out.println("Nomor produk tidak valid!");
+                            }
                         }
                     }
 
                     case 6 -> {
+                        System.out.print("Masukkan Nama Produk yang Diretur: ");
+                        String barangCari = scanner.nextLine();
+                        try {
+                            Produk p = tokoSaya.cariProduk(barangCari);
+                            System.out.println("\nRETUR PRODUK");
+                            p.tampilkanInfo();
+                            p.prosesRetur();
+                        } catch (ProdukTidakDitemukanException e) {
+                            System.out.println("[PERINGATAN]: " + e.getMessage());
+                        }
+                    }
+
+                    case 7 -> {
                         System.out.println("Terima kasih telah menggunakan Sistem Kasir!");
                         isRunning = false;
                     }
 
-                    default -> System.out.println("Pilihan menu tidak valid (Pilih 1-6).");
+                    default -> System.out.println("Pilihan menu tidak valid!");
                 }
-
             } catch (InputMismatchException e) {
-                System.out.println("[ERROR INPUT]: Format input tidak valid! Harap masukkan angka yang sesuai.");
-                scanner.nextLine(); 
+                System.out.println("[ERROR INPUT]: Harap masukkan angka yang valid!");
+                scanner.nextLine();
             } catch (Exception e) {
-                System.out.println("[ERROR SISTEM]: Terjadi kesalahan -> " + e.getMessage());
-            } finally {
-                System.out.println("Loop eksekusi menu selesai");
+                System.out.println("[ERROR]: " + e.getMessage());
             }
         }
-
         scanner.close();
     }
 }
